@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Film Flashcards</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0; min-height:100vh; padding:18px;
+  font-family:Arial,sans-serif; color:#2b2500;
+  background:linear-gradient(135deg,#fff8cf,#fff);
+}
+.app{max-width:720px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.eyebrow{margin:0 0 5px;color:#b88a00;font-size:12px;font-weight:800;letter-spacing:2px}
+h1{margin:0;font-size:32px}
+.progress{background:#fff;border:1px solid #eadb8a;padding:8px 13px;border-radius:20px;font-weight:bold}
+.card{
+  min-height:350px;background:#fff;border-radius:24px;padding:35px 22px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;box-shadow:0 15px 40px rgba(180,140,0,.16)
+}
+.label{color:#c79a00;font-size:12px;font-weight:800;letter-spacing:2px;margin-bottom:20px}
+.question{font-size:clamp(24px,6vw,36px);line-height:1.35;margin:0 0 25px}
+.answer{font-size:24px;color:#665f35;margin:0 0 25px;font-weight:700}
+.hidden{display:none}
+button{
+  border:0;border-radius:11px;padding:12px 17px;font-size:15px;
+  font-weight:700;cursor:pointer;touch-action:manipulation
+}
+.primary{background:#f2c300;color:#2b2500}
+.nav,.manage{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.nav{margin:17px 0}
+.nav button,.manage button{background:#fff;border:1px solid #eadb8a;color:#4a4100}
+.manage .add{background:#2b2500;color:#fff}
+button:disabled{opacity:.45}
+@media(max-width:450px){
+  body{padding:14px} h1{font-size:27px}
+  .card{min-height:320px}
+  .nav button{flex:1}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div>
+    <p class="eyebrow">FILM QUIZ</p>
+    <h1>🎬 Film Flashcards</h1>
+  </div>
+  <span class="progress" id="progress">1 / 4</span>
+</header>
+
+<section class="card">
+  <div class="label" id="label">QUESTION</div>
+  <h2 class="question" id="question"></h2>
+  <p class="answer hidden" id="answer"></p>
+  <button class="primary" id="show" type="button">Show Answer</button>
+</section>
+
+<div class="nav">
+  <button id="prev" type="button">← Previous</button>
+  <button id="next" type="button">Next →</button>
+</div>
+
+<div class="manage">
+  <button class="add" id="add" type="button">＋ Add Card</button>
+  <button id="edit" type="button">✎ Edit</button>
+  <button id="delete" type="button">Delete</button>
+</div>
+</div>
+
+<script>
+const cards=[
+ {q:"Who is the director of Rangasthalam?",a:"Sukumar"},
+ {q:"Who is the music director of 7G Brundavan Colony?",a:"Yuvan Shankar Raja"},
+ {q:"Who is the director of C/o Kancharapalem?",a:"Venkatesh Maha"},
+ {q:"Who is the director of Sairat?",a:"Nagraj Manjule"}
+];
+
+let i=0,showing=false;
+
+const q=document.getElementById("question");
+const a=document.getElementById("answer");
+const label=document.getElementById("label");
+const progress=document.getElementById("progress");
+const show=document.getElementById("show");
+
+function render(){
+  q.textContent=cards[i].q;
+  a.textContent=cards[i].a;
+  progress.textContent=(i+1)+" / "+cards.length;
+  showing=false;
+  a.classList.add("hidden");
+  label.textContent="QUESTION";
+  show.textContent="Show Answer";
+}
+show.onclick=()=>{
+  showing=!showing;
+  a.classList.toggle("hidden",!showing);
+  label.textContent=showing?"ANSWER":"QUESTION";
+  show.textContent=showing?"Hide Answer":"Show Answer";
+};
+document.getElementById("next").onclick=()=>{
+  i=(i+1)%cards.length; render();
+};
+document.getElementById("prev").onclick=()=>{
+  i=(i-1+cards.length)%cards.length; render();
+};
+document.getElementById("add").onclick=()=>{
+  const qn=prompt("Enter question:");
+  if(!qn)return;
+  const an=prompt("Enter answer:");
+  if(!an)return;
+  cards.push({q:qn,a:an});
+  i=cards.length-1; render();
+};
+document.getElementById("edit").onclick=()=>{
+  const qn=prompt("Edit question:",cards[i].q);
+  if(qn===null)return;
+  const an=prompt("Edit answer:",cards[i].a);
+  if(an===null)return;
+  cards[i]={q:qn,a:an}; render();
+};
+document.getElementById("delete").onclick=()=>{
+  if(cards.length===1){alert("At least one card must remain.");return;}
+  if(confirm("Delete this flashcard?")){
+    cards.splice(i,1);
+    if(i>=cards.length)i=cards.length-1;
+    render();
+  }
+};
+render();
+</script>
+</body>
+</html>
